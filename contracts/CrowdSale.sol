@@ -1,26 +1,90 @@
 pragma solidity ^0.6.0;
 import "./StandardToken.sol";
 
-contract SwapToken is StandardToken {
-    address public _swapWith;
+interface NewToken {
+    function swapTokenWitholdToken(uint256 _amount, address _recvier)
+        external
+        returns (uint256);
 
-    constructor(address oldTokenAddress) public {
-        _swapWith = oldTokenAddress;
+    function burn(uint256 amount) external returns (bool);
+}
+
+contract SwapToken is StandardToken {
+    address public _swapWithOld;
+
+    address public _swapWithNew;
+
+    constructor(address oldTokenAddress) internal {
+        _swapWithOld = oldTokenAddress;
     }
 
     /**
      * @dev Returns the bool on success
-     * convert old token with new convert
+     * convert old token with this token
      * user have to give allowence to this contract
      * trasnfer address at 0x1 bcz of conditon in old contract
      * old contract dont have burn method
      */
-    function swapToken(uint256 _amount) external returns (bool) {
-        IERC20(_swapWith).transferFrom(msg.sender, address(1), _amount);
+    function swapWitholdToken(uint256 _amount) external returns (bool) {
+        IERC20(_swapWithOld).transferFrom(msg.sender, address(1), _amount);
         return _mint(msg.sender, _amount);
     }
 
-    function swapTokenWithNewToken() external returns (bool) {}
+    /**
+     * @dev Returns the bool on success
+     * updating this token contacrt to new one
+     * before updating cheking that updated contacrt is not malicious
+     * so before updating cheking that this contacrt dont have any new token
+     * after we convert 1 token and check if new contarct give back token or not
+     */
+    function updateContractToNewToken(address _newTokenAddress)
+        external
+        onlyOwner()
+        notThisAddress(_newTokenAddress)
+        returns (bool)
+    {
+        require(_swapWithNew == address(0), "ERR_NEW_TOKEN_ALREADY_SET");
+        require(
+            IERC20(_newTokenAddress).balanceOf(address(this)) == 0,
+            "ERR_CONTRACT_TOKEN_UPDATE"
+        );
+        uint256 returnToken = NewToken(_newTokenAddress).swapTokenWitholdToken(
+            1,
+            address(this)
+        );
+        require(returnToken >= 1, "ERR_NEW_TOKEN_UPDATE");
+        require(
+            IERC20(_newTokenAddress).balanceOf(address(this)) == returnToken,
+            "ERR_NEW_CONTACRT_IS_NOT_VALID"
+        );
+        _swapWithNew = _newTokenAddress;
+        NewToken(_newTokenAddress).burn(returnToken);
+        return true;
+    }
+
+    /**
+     * @dev Returns the bool on success
+     * convert token with new token
+     * user can call this method to update with new token
+     * This token is burned and replace with new one
+     */
+    function swapWithNewToken()
+        external
+        notZeroAddress(_swapWithNew)
+        returns (bool)
+    {
+        uint256 _senderBalance = balanceOf(msg.sender);
+        uint256 returnToken = NewToken(_swapWithNew).swapTokenWitholdToken(
+            _senderBalance,
+            address(this)
+        );
+        require(
+            IERC20(_swapWithNew).balanceOf(msg.sender) >= returnToken,
+            "ERR_NEW_TOKEN_SWAP_ERROR"
+        );
+        _burn(msg.sender, _senderBalance);
+        return true;
+    }
 }
 
 contract Crowdsale is SwapToken {
@@ -102,10 +166,6 @@ contract Crowdsale is SwapToken {
         bonusStartFrom = _bonusStartFrom;
         return true;
     }
-
-    receive() external payable {
-        buyToken();
-    }
 }
 
 /**
@@ -113,31 +173,61 @@ contract Crowdsale is SwapToken {
  * @dev Contract to create the PaytToken
  **/
 contract PaytToken is Crowdsale {
-    uint256 public teamTokens = 5000000 ether;
+    uint256 public teamTokens;
 
-    // uint256[] public
-    uint256 public marketingTokens = 5000000 ether;
+    uint256 public marketingTokens;
 
-    constructor(address oldTokenAddress) public Crowdsale(oldTokenAddress) {
+    mapping(uint8 => uint256) public teamTokenUnlockDate;
+    mapping(uint8 => uint256) public teamTokenUnlockAmount;
+    mapping(uint8 => bool) public teamTokenUnlocked;
+
+    uint256 teamTokenUnlockLength;
+
+    constructor(
+        address oldTokenAddress,
+        uint256 _teamToken,
+        uint256 _marketingToken,
+        uint256[] memory _unlockDate,
+        uint256[] memory _unlockAmount
+    ) public Crowdsale(oldTokenAddress) {
         _mint(address(this), safeAdd(teamTokens, marketingTokens));
+        teamTokens = _teamToken;
+        marketingTokens = _marketingToken;
+        require(
+            _unlockDate.length == _unlockAmount.length,
+            "ERR_ARRAY_LENGTH_IS_NOT_SAME"
+        );
+        uint256 totalUnlockAmount;
+        for (uint8 i = 0; i < _unlockAmount.length; i++) {
+            teamTokenUnlockDate[i] = _unlockDate[i];
+            teamTokenUnlockAmount[i] = _unlockAmount[i];
+            totalUnlockAmount = safeAdd(totalUnlockAmount, _unlockAmount[i]);
+        }
+        teamTokenUnlockLength = _unlockAmount.length;
+        require(
+            _teamToken == _marketingToken,
+            "ERR_UNLOCKING_AMOUNT_DONT_MATCH"
+        );
     }
 
-    function unlockTeamToken() external onlyOwner() returns (bool) {
+    function unlockTeamToken(uint8 _unlockId)
+        external
+        onlyOwner()
+        returns (bool)
+    {
         require(teamTokens > 0, "ERR_TEAM_BONUS_ZERO");
-
-        if (now > 1609459200) {
-            _transfer(address(this), owner, safeExponent(2000000, 18));
-            teamTokens = safeSub(teamTokens, safeExponent(2000000, 18));
-        }
-        if (now > 1622505600) {
-            _transfer(address(this), owner, safeExponent(2000000, 18));
-            teamTokens = safeSub(teamTokens, safeExponent(2000000, 18));
-        }
-        if (now > 1640995200) {
-            _transfer(address(this), owner, teamTokens);
-            teamTokens = 0;
-        }
-
+        require(
+            now > teamTokenUnlockDate[_unlockId],
+            "ERR_UNLOCK_DATE_IS_NOT_PASSED"
+        );
+        require(
+            !teamTokenUnlocked[_unlockId],
+            "ERR_TOKEN_IS_UNLOCKED_ALEREADY"
+        );
+        uint256 unlockAmount = teamTokenUnlockAmount[_unlockId];
+        _transfer(address(this), owner, unlockAmount);
+        teamTokens = safeSub(teamTokens, unlockAmount);
+        teamTokenUnlocked[_unlockId] = true;
         return true;
     }
 
@@ -157,5 +247,9 @@ contract PaytToken is Crowdsale {
             }
         }
         return true;
+    }
+
+    receive() external payable {
+        buyToken();
     }
 }
