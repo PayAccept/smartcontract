@@ -5,22 +5,16 @@ import "./IERC20.sol";
 import "./Ownable.sol";
 
 abstract contract StandardToken is IERC20, SafeMath, Ownable {
-    mapping(address => uint256) private _balances;
+    mapping(address => uint256) internal _balances;
 
-    mapping(address => mapping(address => uint256)) private _allowances;
+    mapping(address => mapping(address => uint256)) internal _allowances;
 
-    uint256 private _totalSupply;
+    uint256 internal _totalSupply;
 
-    string private _name;
-    string private _symbol;
-    uint8 private _decimals;
-
-    constructor(string memory name, string memory symbol) public {
-        require(bytes(_name).length > 0 && bytes(_symbol).length > 0);
-        _name = name;
-        _symbol = symbol;
-        _decimals = 18;
-    }
+    string internal _name = "PayAccept Token";
+    string internal _symbol = "PAYT";
+    uint8 internal _decimals = 18;
+    uint256 internal _maxSupply = 45000000 ether;
 
     /**
      * @dev Returns the name of the token.
@@ -55,6 +49,13 @@ abstract contract StandardToken is IERC20, SafeMath, Ownable {
     }
 
     /**
+     * @dev Returns the token supply that minted max
+     */
+    function maxSupply() public view returns (uint256) {
+        return _maxSupply;
+    }
+
+    /**
      * @dev See {IERC20-totalSupply}.
      */
     function totalSupply() public override view returns (uint256) {
@@ -66,6 +67,19 @@ abstract contract StandardToken is IERC20, SafeMath, Ownable {
      */
     function balanceOf(address account) public override view returns (uint256) {
         return _balances[account];
+    }
+
+    /**
+     * @dev See {IERC20-allowance}.
+     */
+    function allowance(address owner, address spender)
+        public
+        virtual
+        override
+        view
+        returns (uint256)
+    {
+        return _allowances[owner][spender];
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
@@ -80,13 +94,15 @@ abstract contract StandardToken is IERC20, SafeMath, Ownable {
     function _mint(address account, uint256 amount)
         internal
         virtual
-        notThisAddress(account)
         notZeroAddress(account)
         notZeroValue(amount)
+        returns (bool)
     {
         _totalSupply = safeAdd(_totalSupply, amount);
+        require(_maxSupply >= _totalSupply, "ERR_MAX_TOKEN_SUPPLY_REACH");
         _balances[account] = safeAdd(_balances[account], amount);
         emit Transfer(address(0), account, amount);
+        return true;
     }
 
     /**
@@ -133,6 +149,7 @@ abstract contract StandardToken is IERC20, SafeMath, Ownable {
         uint256 amount
     )
         internal
+        virtual
         notThisAddress(recipient)
         notZeroAddress(recipient)
         returns (bool)
@@ -165,5 +182,79 @@ abstract contract StandardToken is IERC20, SafeMath, Ownable {
     ) internal virtual notZeroAddress(owner) notZeroAddress(spender) {
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
+    }
+
+    /**
+     * @dev See {IERC20-approve}.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     */
+    function approve(address spender, uint256 amount)
+        external
+        virtual
+        override
+        returns (bool)
+    {
+        _approve(msg.sender, spender, amount);
+        return true;
+    }
+
+    /**
+     * @dev Atomically increases the allowance granted to `spender` by the caller.
+     *
+     * This is an alternative to {approve} that can be used as a mitigation for
+     * problems described in {IERC20-approve}.
+     *
+     * Emits an {Approval} event indicating the updated allowance.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     */
+    function increaseAllowance(address spender, uint256 addedValue)
+        external
+        virtual
+        returns (bool)
+    {
+        _approve(
+            msg.sender,
+            spender,
+            safeAdd(_allowances[spender][msg.sender], addedValue)
+        );
+        return true;
+    }
+
+    /**
+     * @dev Atomically decreases the allowance granted to `spender` by the caller.
+     *
+     * This is an alternative to {approve} that can be used as a mitigation for
+     * problems described in {IERC20-approve}.
+     *
+     * Emits an {Approval} event indicating the updated allowance.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     * - `spender` must have allowance for the caller of at least
+     * `subtractedValue`.
+     */
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        external
+        virtual
+        returns (bool)
+    {
+        require(_allowances[spender][msg.sender] >= subtractedValue, "");
+        _approve(
+            msg.sender,
+            spender,
+            safeSub(_allowances[spender][msg.sender], subtractedValue)
+        );
+        return true;
+    }
+
+    function burn(uint256 amount) external virtual returns (bool) {
+        _burn(msg.sender, amount);
     }
 }
