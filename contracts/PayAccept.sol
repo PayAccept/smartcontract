@@ -496,7 +496,7 @@ contract PaytToken is Stacking {
         }
         teamTokenUnlockLength = _unlockAmount.length;
         require(
-            _teamToken == _marketingToken,
+            _teamToken == totalUnlockAmount,
             "ERR_UNLOCKING_AMOUNT_DONT_MATCH"
         );
     }
