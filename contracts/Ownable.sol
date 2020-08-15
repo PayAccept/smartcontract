@@ -16,6 +16,8 @@ import "./Constant.sol";
 contract Ownable is Constant {
     address payable public owner;
 
+    address payable public newOwner;
+
     event OwnershipTransferred(
         address indexed previousOwner,
         address indexed newOwner
@@ -41,13 +43,21 @@ contract Ownable is Constant {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address payable newOwner)
+    function transferOwnership(address payable _newOwner)
         external
         virtual
-        notZeroAddress(newOwner)
+        notZeroAddress(_newOwner)
         onlyOwner
     {
-        emit OwnershipTransferred(owner, newOwner);
+        // emit OwnershipTransferred(owner, newOwner);
+        newOwner = _newOwner;
+    }
+
+    function acceptOwnership() external virtual returns (bool) {
+        require(msg.sender == newOwner, "ERR_ONLY_NEW_OWNER");
         owner = newOwner;
+        emit OwnershipTransferred(owner, newOwner);
+        newOwner = address(0);
+        return true;
     }
 }
