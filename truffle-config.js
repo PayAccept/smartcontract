@@ -18,7 +18,7 @@ const MNEMONIC = '';
 module.exports = {
   compilers: {
     solc: {
-      version: "0.4.26",
+      version: "^0.6.0",
       settings: {
         optimizer: {
           enabled: true,
@@ -30,7 +30,7 @@ module.exports = {
   networks: {
     development: {
       host: "127.0.0.1",
-      port: 7545,
+      port: 9545,
       network_id: "*"
     },
     ropsten: {

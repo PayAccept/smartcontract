@@ -71,7 +71,7 @@ contract("~PaytToken works", function (accounts) {
         this.paytToken = await PaytToken.new(this.testTokenOLD.address,"19000000000000000000000000", // 19m total premint token for owner 
                                                                         "5000000000000000000000000", // 5m team token 
                                                                         "1000000000000000000000000", // 1m supply for airdrop
-                                                                        ["1609459200","1622505600","1640995200"], // tema token unlock date 
+                                                                        ["1565971900","1568650300","1571242300"], // team token unlock date 
                                                                         ["2000000000000000000000000","2000000000000000000000000","1000000000000000000000000"], {
             from: Owner,
         });
@@ -287,7 +287,6 @@ contract("~PaytToken works", function (accounts) {
     })
 
     describe("Test PayNodes For AutoMatic Remove", async function () {
-        let account6BalanceAfterClaim;
         beforeEach(async function () {
           await this.paytToken.startTokenSale({ from: Owner }) 
           await web3.eth.sendTransaction({
@@ -312,6 +311,23 @@ contract("~PaytToken works", function (accounts) {
         it("Cheking Claim Stack payNoder when balance is below limit", async function () {
             expect(await this.paytToken.balanceOf(account6)).to.be.bignumber.equal(
                 "1008333333333333333333"
+            );
+        });   
+    })
+    describe("Team Token", async function () {
+        
+        beforeEach(async function () {
+          await this.paytToken.startTokenSale({ from: Owner });
+          await this.paytToken.endTokenSale({ from: Owner });
+          await this.paytToken.transfer(account8,await this.paytToken.balanceOf(Owner),{ from: Owner });
+          await this.paytToken.unlockTeamToken(0,{ from: Owner });
+          await this.paytToken.unlockTeamToken(1,{ from: Owner });
+          await this.paytToken.unlockTeamToken(2,{ from: Owner });
+        });
+
+        it("Team Token Unlocked", async function () {
+            expect(await this.paytToken.balanceOf(Owner)).to.be.bignumber.equal(
+                "5000000000000000000000000"
             );
         });   
     })
