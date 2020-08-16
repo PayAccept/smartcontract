@@ -271,40 +271,40 @@ abstract contract Paynodes is Swapping {
     address[] public payNoders;
 
     /**
-     * @dev maximum paynoder 
-    **/
+     * @dev maximum paynoder
+     **/
     uint256 public payNoderSlot = 10;
-    
+
     /**
      * @dev minimum balance require for be in paynode
-    **/
+     **/
     uint256 public minimumBalance = 45000 ether;
-    
+
     /**
      * @dev divide by 100 to achive into fraction
      * it is mulitply
-    **/
+     **/
     uint256 public extraMintForPayNodes = 5000;
-    
-    
-    
+
     /**
-     * @dev adding account in paynode 
-    **/
+     * @dev adding account in paynode
+     **/
     function addaccountToPayNode(address _whom)
         external
         onlyOwner()
         returns (bool)
-    {   
-        require(payNoders.length <= payNoderSlot ,"ERR_PAYNODE_LIST_FULL");
-        require(_balances[_whom] >= minimumBalance,"ERR_PAYNODE_MINIMUM_BALANCE");
-        require(isPayNoder[_whom] == false,"ERR_ALREADY_IN_PAYNODE_LIST");
+    {
+        require(payNoders.length <= payNoderSlot, "ERR_PAYNODE_LIST_FULL");
+        require(
+            _balances[_whom] >= minimumBalance,
+            "ERR_PAYNODE_MINIMUM_BALANCE"
+        );
+        require(isPayNoder[_whom] == false, "ERR_ALREADY_IN_PAYNODE_LIST");
         isPayNoder[_whom] = true;
         payNoderIndex[_whom] = payNoders.length;
         payNoders.push(_whom);
         return true;
     }
-    
 
     /**
      * @dev remove account from paynode
@@ -368,7 +368,6 @@ abstract contract Paynodes is Swapping {
         payNoderSlot = _payNoderSlot;
         return true;
     }
-
 }
 
 abstract contract Stacking is Paynodes {
@@ -524,7 +523,7 @@ contract PaytToken is Stacking {
     {
         require(teamTokens > 0, "ERR_TEAM_BONUS_ZERO");
         require(
-            now > teamTokenUnlockDate[_unlockId],
+            teamTokenUnlockDate[_unlockId] < now,
             "ERR_UNLOCK_DATE_IS_NOT_PASSED"
         );
         require(
