@@ -13,7 +13,7 @@
  */
 
 var HDWalletProvider = require("truffle-hdwallet-provider");
-const MNEMONIC = '0x3D62939FE6276F92600063C1FA71FBEFA647F4EA23F8BD72CB1D07964DF026FF';
+const MNEMONIC = '';
 
 module.exports = {
   compilers: {
@@ -35,7 +35,7 @@ module.exports = {
     },
     ropsten: {
       provider: function() {
-        return new HDWalletProvider(MNEMONIC,"https://ropsten.infura.io/v3/708ba26d4eab49ecad5d3b4dd2f4b347")
+        return new HDWalletProvider(MNEMONIC,"")
       },
       network_id: '3',
       gas: 8000000,
