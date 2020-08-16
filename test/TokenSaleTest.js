@@ -64,6 +64,7 @@ contract("~PaytToken works", function (accounts) {
     var basicTokenAmount = getWith18Decimals(10000);
 
     beforeEach(async function () {
+
         this.testTokenOLD = await ERC20Basic.new(basicTokenAmount, {
           from: Owner,
         });
@@ -75,20 +76,78 @@ contract("~PaytToken works", function (accounts) {
                                                                         ["2000000000000000000000000","2000000000000000000000000","1000000000000000000000000"], {
             from: Owner,
         });
-        
-        this.testTokenNew = await ERC20Basic.new(0, {
-            from: Owner,
-        });
     });
-
-    describe("System should be  initialized correctly", async function () {
+   
+    describe("System should be initialized correctly", async function () {
+       
         it("has a name", async function () {
-        //   expect(await this.paytToken.name()).to.equal(tokenName);
-        //   expect(await this.paytToken.symbol()).to.equal(symbol);
-          expect(await this.paytToken.decimals()).to.equal(decimals);
+            expect(await this.paytToken.symbol()).to.equal(symbol);
+        });
+
+        it("has a symbol", async function () {
+            expect(await this.paytToken.symbol()).to.equal(symbol);
         });
 
     });
 
+    describe("Before Tokensale Start", async function () {
+        
+        beforeEach(async function () {
+
+            try{
+                await web3.eth.sendTransaction({
+                    from: account1,
+                    to: this.paytToken.address,
+                    value: getWith18Decimals(1),
+                });
+            }catch(e){
+
+            }
+            await this.paytToken.startTokenSale({ from: Owner })
+            
+;
+
+            await web3.eth.sendTransaction({
+                from: account2,
+                to: this.paytToken.address,
+                value: getWith18Decimals(1),
+            });
+
+            //sendign 10 ether for bonus check
+            await web3.eth.sendTransaction({
+                from: account3,
+                to: this.paytToken.address,
+                value: getWith18Decimals(10),
+            });
+
+            
+        })
+        
+        it("Before TokenSale Start Balance Shold Be Zero", async function () {
+            expect(await this.paytToken.balanceOf(account1)).to.be.bignumber.equal(
+                getWith18Decimals(0).toString()
+            );
+        });
+
+        it("after TokenSale Start Balance Shold Be 1000", async function () {
+            expect(await this.paytToken.balanceOf(account2)).to.be.bignumber.equal(
+                getWith18Decimals(1000).toString()
+            );
+        });
+
+        it("Cheking Bonus", async function () {
+            expect(await this.paytToken.balanceOf(account3)).to.be.bignumber.equal(
+                getWith18Decimals(11000).toString()
+            );
+        });
+
+    });
+
+    describe("Token Swap", async function () {
+
+    
+    
+    })
+    
 
 });
