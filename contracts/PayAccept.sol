@@ -271,40 +271,40 @@ abstract contract Paynodes is Swapping {
     address[] public payNoders;
 
     /**
-     * @dev maximum paynoder
-     **/
-    uint8 public payNoderSlot = 10;
-
+     * @dev maximum paynoder 
+    **/
+    uint256 public payNoderSlot = 10;
+    
     /**
      * @dev minimum balance require for be in paynode
-     **/
+    **/
     uint256 public minimumBalance = 45000 ether;
-
+    
     /**
      * @dev divide by 100 to achive into fraction
      * it is mulitply
-     **/
+    **/
     uint256 public extraMintForPayNodes = 5000;
-
+    
+    
+    
     /**
-     * @dev adding account in paynode
-     **/
+     * @dev adding account in paynode 
+    **/
     function addaccountToPayNode(address _whom)
         external
         onlyOwner()
         returns (bool)
-    {
-        require(payNoderSlot <= payNoders.length, "ERR_PAYNODE_LIST_FULL");
-        require(
-            _balances[_whom] >= minimumBalance,
-            "ERR_PAYNODE_MINIMUM_BALANCE"
-        );
-        require(isPayNoder[_whom] == false, "ERR_ALREADY_IN_PAYNODE_LIST");
+    {   
+        require(payNoders.length <= payNoderSlot ,"ERR_PAYNODE_LIST_FULL");
+        require(_balances[_whom] >= minimumBalance,"ERR_PAYNODE_MINIMUM_BALANCE");
+        require(isPayNoder[_whom] == false,"ERR_ALREADY_IN_PAYNODE_LIST");
         isPayNoder[_whom] = true;
         payNoderIndex[_whom] = payNoders.length;
         payNoders.push(_whom);
         return true;
     }
+    
 
     /**
      * @dev remove account from paynode
@@ -344,7 +344,7 @@ abstract contract Paynodes is Swapping {
     }
 
     /**
-     * @dev owner can chane extra mint percent for paynoder
+     * @dev owner can change extra mint percent for paynoder
      * _extraMintForPayNodes is set in percent with mulitply 100
      * if owner want to set 1.25% then value is 125
      **/
@@ -356,6 +356,19 @@ abstract contract Paynodes is Swapping {
         extraMintForPayNodes = _extraMintForPayNodes;
         return true;
     }
+
+    /**
+     * @dev owner can set paynoder slots
+     **/
+    function setPayNoderSlot(uint256 _payNoderSlot)
+        external
+        onlyOwner()
+        returns (bool)
+    {
+        payNoderSlot = _payNoderSlot;
+        return true;
+    }
+
 }
 
 abstract contract Stacking is Paynodes {
@@ -445,7 +458,7 @@ abstract contract Stacking is Paynodes {
     /**
      * @dev owner can distrubute the stack
      **/
-    function claimStack(address[] calldata _whom)
+    function sendStackByOwner(address[] calldata _whom)
         external
         onlyOwner()
         returns (bool)
@@ -538,7 +551,7 @@ contract PaytToken is Stacking {
             "ERR_ARRAY_LENGTH_IS_NOT_SAME"
         );
         for (uint8 i = 0; i < recipients.length; i++) {
-            if (values[i] > marketingTokens) {
+            if (marketingTokens >= values[i]) {
                 _transfer(address(this), recipients[i], values[i]);
                 marketingTokens = safeSub(marketingTokens, values[i]);
             }
@@ -559,6 +572,7 @@ contract PaytToken is Stacking {
         virtual
         override
         onlyWhenSaleIsOver()
+        checkLocking(msg.sender)
         returns (bool)
     {
         _transfer(msg.sender, recipient, amount);
@@ -581,7 +595,14 @@ contract PaytToken is Stacking {
         address sender,
         address recipient,
         uint256 amount
-    ) external virtual override onlyWhenSaleIsOver() returns (bool) {
+    )
+        external
+        virtual
+        override
+        onlyWhenSaleIsOver()
+        checkLocking(sender)
+        returns (bool)
+    {
         _transfer(sender, recipient, amount);
         _approve(
             sender,
