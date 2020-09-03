@@ -9,8 +9,8 @@ interface PayAcceptInterFace {
         uint256 _premintToken,
         uint256 _teamToken,
         uint256 _marketingToken,
-        uint256[] memory _unlockDate,
-        uint256[] memory _unlockAmount,
+        uint256[] calldata _unlockDate,
+        uint256[] calldata _unlockAmount,
         address payable _ownerAccount
     ) external;
 }
