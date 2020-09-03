@@ -1,4 +1,6 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
+
 import "./Constant.sol";
 
 /**
@@ -14,6 +16,7 @@ import "./Constant.sol";
  * the owner.
  */
 contract Ownable is Constant {
+    
     address payable public owner;
     
     address payable public newOwner;
@@ -22,7 +25,7 @@ contract Ownable is Constant {
         address indexed previousOwner,
         address indexed newOwner
     );
-
+    
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
@@ -30,7 +33,6 @@ contract Ownable is Constant {
         owner = msg.sender;
         emit OwnershipTransferred(address(0), msg.sender);
     }
-
     
 
     /**

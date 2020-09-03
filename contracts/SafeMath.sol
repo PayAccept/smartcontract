@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
 contract SafeMath {
-    /**
+
+ 
+   /**
      * @dev Returns the subtraction of two unsigned integers, reverting on
      * overflow (when the result is negative).
      *
@@ -14,7 +17,7 @@ contract SafeMath {
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
         return safeSub(a, b, "SafeMath: subtraction overflow");
     }
-
+  
     /**
      * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
      * overflow (when the result is negative).
@@ -25,16 +28,13 @@ contract SafeMath {
      *
      * - Subtraction cannot overflow.
      */
-    function safeSub(
-        uint256 a,
-        uint256 b,
-        string memory error
-    ) internal pure returns (uint256) {
+    function safeSub(uint256 a, uint256 b, string memory error) internal pure returns (uint256) {
         require(b <= a, error);
         uint256 c = a - b;
         return c;
     }
-
+    
+    
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
      * overflow.
@@ -50,7 +50,7 @@ contract SafeMath {
         require(c >= a, "SafeMath: addition overflow");
         return c;
     }
-
+    
     /**
      * @dev Returns the multiplication of two unsigned integers, reverting on
      * overflow.
@@ -103,27 +103,21 @@ contract SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function safeDiv(
-        uint256 a,
-        uint256 b,
-        string memory error
-    ) internal pure returns (uint256) {
+    function safeDiv(uint256 a, uint256 b, string memory error) internal pure returns (uint256) {
         require(b > 0, error);
         uint256 c = a / b;
         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
         return c;
     }
-
-    function safeExponent(uint256 a, uint256 b)
-        internal
-        pure
-        returns (uint256)
-    {
-        uint256 result;
-        assembly {
-            result := exp(a, b)
-        }
-        return result;
-    }
+    
+    function safeExponent(uint256 a,uint256 b) internal pure returns (uint256) {
+      uint256 result;
+      assembly {
+          result:=exp(a, b)	
+      }
+      return result;
+  }
+    
+    
 }
