@@ -22,6 +22,7 @@ interface PayAcceptProxyInterFace {
  * @dev This contract works as a registry of versions, it holds the implementations for the registered versions.
  */
 contract PayAcceptRegistery is Ownable, IRegistry {
+    
     // Mapping of versions to implementations of different functions
     mapping(uint256 => address) internal versions;
 
@@ -72,8 +73,8 @@ contract PayAcceptRegistery is Ownable, IRegistry {
         uint256 _premintToken,
         uint256 _teamToken,
         uint256 _marketingToken,
-        uint256[] memory _unlockDate,
-        uint256[] memory _unlockAmount,
+        uint256[] calldata _unlockDate,
+        uint256[] calldata _unlockAmount,
         address payable _ownerAccount) external onlyOwner() returns (address) {
         require(proxyAddress == address(0), "ERR_PROXY_ALREADY_CREATED");
 
