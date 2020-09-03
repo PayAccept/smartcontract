@@ -13,7 +13,9 @@ const { expect } = require("chai");
 const { forEach } = require("lodash");
 
 var PaytToken = artifacts.require("PaytToken");
+var PayAcceptRegistery = artifacts.require("PayAcceptRegistery");
 var ERC20Basic = artifacts.require("ERC20Basic");
+
 
 
 
@@ -68,22 +70,41 @@ contract("~PaytToken works", function (accounts) {
           from: Owner,
         });
 
-        this.paytToken = await PaytToken.new(this.testTokenOLD.address,"19000000000000000000000000", // 19m total premint token for owner 
-                                                                        "5000000000000000000000000", // 5m team token 
-                                                                        "1000000000000000000000000", // 1m supply for airdrop
-                                                                        ["1565971900","1568650300","1571242300"], // team token unlock date 
-                                                                        ["2000000000000000000000000","2000000000000000000000000","1000000000000000000000000"], {
+        this.paytImpl = await PaytToken.new({
             from: Owner,
         });
+
+        this.paytRegistery = await PayAcceptRegistery.new({
+            from: Owner,
+        });
+
+        await this.paytRegistery.addVersion(1,PaytToken.address,{
+            from: Owner,
+        });
+
+        await this.paytRegistery.createProxy(1,
+                this.testTokenOLD.address, // old token address
+                "19000000000000000000000000", // 19m total premint token for owner 
+                "5000000000000000000000000", // 5m team token 
+                "1000000000000000000000000", // 1m supply for airdrop
+                ["1609459200","1622505600","1640995200"], // tema token unlock date 
+                ["2000000000000000000000000","2000000000000000000000000","1000000000000000000000000"],//teamToken amount
+                ownerAccount // owner account for paytToken
+            );
+        
+        let proxyAddress = await paytRegistery.proxyAddress();
+
+        this.paytToken = await PaytToken.at(proxyAddress);
+
         this.testTokenOLD.transfer(account4,basicTokenAmount, {
             from: Owner,
-          });
+        });
     });
    
     describe("System should be initialized correctly", async function () {
        
         it("has a name", async function () {
-            expect(await this.paytToken.symbol()).to.equal(symbol);
+            expect(await this.paytToken.name()).to.equal(tokenName);
         });
 
         it("has a symbol", async function () {
