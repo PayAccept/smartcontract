@@ -30,8 +30,12 @@ contract Ownable is Constant {
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
     constructor() internal {
-        owner = msg.sender;
-        emit OwnershipTransferred(address(0), msg.sender);
+        _trasnferOwnership(msg.sender);
+    }
+    
+    function _trasnferOwnership(address payable _whom) internal {
+        emit OwnershipTransferred(owner,_whom);
+        owner = _whom;
     }
     
 
