@@ -7,6 +7,7 @@ import "./Ownable.sol";
 import "./PayAcceptStorage.sol";
 
 abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
+      
     /**
      * @dev Returns the name of the token.
      */
@@ -38,7 +39,7 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
     function decimals() public view returns (uint8) {
         return _decimals;
     }
-
+    
     /**
      * @dev Returns the token supply that minted max
      */
@@ -60,7 +61,7 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
     function balanceOf(address account) public override view returns (uint256) {
         return _balances[account];
     }
-
+    
     /**
      * @dev See {IERC20-allowance}.
      */
@@ -108,11 +109,13 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
         notThisAddress(account)
         notZeroAddress(account)
         notZeroValue(amount)
+        returns (bool)
     {
         require(_balances[account] >= amount, ERR_NOT_ENOUGH_BALANCE);
         _balances[account] = safeSub(_balances[account], amount);
         _totalSupply = safeSub(_totalSupply, amount);
         emit Transfer(account, address(0), amount);
+        return true;
     }
 
     /**
@@ -169,9 +172,9 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
-
-
-
+    
+    
+    
     /**
      * @dev See {IERC20-approve}.
      *
@@ -183,7 +186,7 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
         _approve(msg.sender, spender, amount);
         return true;
     }
-
+    
     /**
      * @dev Atomically increases the allowance granted to `spender` by the caller.
      *
@@ -220,18 +223,18 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
         _approve(msg.sender, spender, safeSub(_allowances[spender][msg.sender],subtractedValue));
         return true;
     }
-
-
-
+    
+     
+    
     function burn(uint256 amount)
         external
         virtual
-        returns (bool)
+        returns (bool) 
     {
-        _burn(msg.sender,amount);
+        return _burn(msg.sender,amount);
     }
 
-
+    
 }
 
 
