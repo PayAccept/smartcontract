@@ -6,8 +6,7 @@ import "./IERC20.sol";
 import "./Ownable.sol";
 import "./PayAcceptStorage.sol";
 
-abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
-      
+abstract contract StandardToken is IERC20, PayAcceptStorage, SafeMath, Ownable {
     /**
      * @dev Returns the name of the token.
      */
@@ -39,14 +38,13 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
     function decimals() public view returns (uint8) {
         return _decimals;
     }
-    
+
     /**
      * @dev Returns the token supply that minted max
      */
     function maxSupply() public view returns (uint256) {
         return _maxSupply;
     }
-
 
     /**
      * @dev See {IERC20-totalSupply}.
@@ -61,11 +59,17 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
     function balanceOf(address account) public override view returns (uint256) {
         return _balances[account];
     }
-    
+
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(address owner, address spender)
+        public
+        virtual
+        override
+        view
+        returns (uint256)
+    {
         return _allowances[owner][spender];
     }
 
@@ -86,7 +90,7 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
         returns (bool)
     {
         _totalSupply = safeAdd(_totalSupply, amount);
-        require(_maxSupply >= _totalSupply,"ERR_MAX_TOKEN_SUPPLY_REACH");
+        require(_maxSupply >= _totalSupply, "ERR_MAX_TOKEN_SUPPLY_REACH");
         _balances[account] = safeAdd(_balances[account], amount);
         emit Transfer(address(0), account, amount);
         return true;
@@ -172,9 +176,7 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
-    
-    
-    
+
     /**
      * @dev See {IERC20-approve}.
      *
@@ -182,11 +184,16 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) external virtual override returns (bool) {
+    function approve(address spender, uint256 amount)
+        external
+        virtual
+        override
+        returns (bool)
+    {
         _approve(msg.sender, spender, amount);
         return true;
     }
-    
+
     /**
      * @dev Atomically increases the allowance granted to `spender` by the caller.
      *
@@ -199,8 +206,16 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) external virtual returns (bool) {
-        _approve(msg.sender, spender, safeAdd(_allowances[spender][msg.sender],addedValue));
+    function increaseAllowance(address spender, uint256 addedValue)
+        external
+        virtual
+        returns (bool)
+    {
+        _approve(
+            msg.sender,
+            spender,
+            safeAdd(_allowances[spender][msg.sender], addedValue)
+        );
         return true;
     }
 
@@ -218,23 +233,21 @@ abstract contract StandardToken is IERC20,PayAcceptStorage,SafeMath, Ownable {
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) external virtual returns (bool) {
-        require(_allowances[spender][msg.sender] >= subtractedValue,"");
-        _approve(msg.sender, spender, safeSub(_allowances[spender][msg.sender],subtractedValue));
-        return true;
-    }
-    
-     
-    
-    function burn(uint256 amount)
+    function decreaseAllowance(address spender, uint256 subtractedValue)
         external
         virtual
-        returns (bool) 
+        returns (bool)
     {
-        return _burn(msg.sender,amount);
+        require(_allowances[spender][msg.sender] >= subtractedValue, "");
+        _approve(
+            msg.sender,
+            spender,
+            safeSub(_allowances[spender][msg.sender], subtractedValue)
+        );
+        return true;
     }
 
-    
+    function burn(uint256 amount) external virtual returns (bool) {
+        return _burn(msg.sender, amount);
+    }
 }
-
-
