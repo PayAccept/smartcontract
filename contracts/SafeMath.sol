@@ -115,5 +115,4 @@ contract SafeMath {
         }
         return result;
     }
-
 }

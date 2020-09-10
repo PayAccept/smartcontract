@@ -47,7 +47,7 @@ abstract contract Swapping is Locking {
      * @dev pause swap
      */
     function pauseSwap() external onlyOwner() returns (bool) {
-        require(isSwapPaused == false, "ERR_SWAP_ALEREADY_PAUSED");
+        require(isSwapPaused == false, "ERR_SWAP_ALREADY_PAUSED");
         isSwapPaused = true;
         return true;
     }
@@ -56,7 +56,7 @@ abstract contract Swapping is Locking {
      * @dev unpause swap
      */
     function unPauseSwap() external onlyOwner() returns (bool) {
-        require(isSwapPaused, "ERR_SWAP_ALEREADY_UNPAUSED");
+        require(isSwapPaused, "ERR_SWAP_ALREADY_UNPAUSED");
         isSwapPaused = false;
         return true;
     }
@@ -64,8 +64,8 @@ abstract contract Swapping is Locking {
     /**
      * @dev Returns the bool on success
      * convert old token with this token
-     * user have to give allowence to this contract
-     * trasnfer address at 0x1 bcz of conditon in old contract
+     * user have to give allowance to this contract
+     * transfer address at 0x1 bcz of condition in old contract
      * old contract dont have burn method
      */
     function swapWithOldToken(uint256 _amount) external returns (bool) {
@@ -85,7 +85,7 @@ abstract contract Minter is Swapping {
     }
 
     function _transferMintingOwnership(address _whom) internal {
-        emit MintingOwnershipTransfered(mintingOwner, _whom);
+        emit MintingOwnershipTransferred(mintingOwner, _whom);
         mintingOwner = _whom;
     }
 
@@ -177,7 +177,7 @@ contract PaytToken is Upgradeable, Minter, PayAcceptInterFace {
         );
         require(
             !teamTokenUnlocked[_unlockId],
-            "ERR_TOKEN_IS_UNLOCKED_ALEREADY"
+            "ERR_TOKEN_IS_UNLOCKED_ALREADY"
         );
         uint256 unlockAmount = teamTokenUnlockAmount[_unlockId];
         _transfer(address(this), owner, unlockAmount);

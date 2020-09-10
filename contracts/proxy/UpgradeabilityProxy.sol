@@ -22,7 +22,7 @@ contract UpgradeabilityProxy is  UpgradeabilityStorage {
      * @param _version representing the version name of the new implementation to be set
      */
     function upgradeTo(uint256 _version) public {
-        require(msg.sender == address(registry),"ERR_ONLY_REGISTRERY_CAN_CALL");
+        require(msg.sender == address(registry),"ERR_ONLY_REGISTRY_CAN_CALL");
         _implementation = registry.getVersion(_version);
     }
 }
