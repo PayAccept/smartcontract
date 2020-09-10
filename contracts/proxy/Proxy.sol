@@ -13,13 +13,13 @@ abstract contract Proxy {
     function implementation() public virtual view returns (address);
 
     /**
-     * @dev Fallback function allowing to perform a delegatecall to the given implementation.
+     * @dev Fallback function allowing to perform a delegate call to the given implementation.
      * This function will return whatever the implementation call returns
      */
 
     function _fallback() internal {
         address _impl = implementation();
-        require(_impl != address(0),"ERR_IMPLEMENTEION_ZERO");
+        require(_impl != address(0),"ERR_IMPLEMENTATION_ZERO");
 
         assembly {
             let ptr := mload(0x40)
@@ -38,9 +38,7 @@ abstract contract Proxy {
         }
     }
 
-
     fallback() external payable {
         _fallback();
     }
-
 }

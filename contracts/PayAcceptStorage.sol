@@ -8,7 +8,7 @@ contract PayAcceptStorage {
 
     uint256 internal _totalSupply;
 
-    string internal constant _name = "PayAccept" ;
+    string internal constant _name = "PayAccept";
     string internal constant _symbol = "PAYT";
     uint8 internal constant _decimals = 18;
     uint256 internal constant _maxSupply = 45000000 ether;
@@ -38,7 +38,7 @@ contract PayAcceptStorage {
     event TokenSaleEnded(uint256 time);
     event BasePriceChanged(uint256 oldPrice, uint256 _newPrice);
 
-    event MintingOwnershipTransfered(
+    event MintingOwnershipTransferred(
         address indexed previousOwner,
         address indexed newOwner
     );

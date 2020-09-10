@@ -14,6 +14,6 @@ contract Upgradeable is UpgradeabilityStorage {
      * THIS FUNCTION SHOULD BE OVERRIDDEN CALLING SUPER
      */
     function initialize() public view {
-        require(msg.sender == address(registry),"ERR_ONLY_REGISTRERY_CAN_CALL");
+        require(msg.sender == address(registry),"ERR_ONLY_REGISTRY_CAN_CALL");
     }
 }
