@@ -25,16 +25,7 @@ The total supply will be 45M tokens, which will be minted by stakers, or minted 
 
 ### 1] Tokensale
 
-The tokensale is where investors can directly purchase tokens for a certain price (basePrice) this can be modified. For big traders they will get more tokens, an example:
-
-Base price is 1 ETH = 1000 PAY
-
-If they buy for 5 ETH, they got 5000 PAY (+5% bonus = 250 PAY)
-If they buy for 10 ETH, they got 10000 PAY (+10% bonus = 1000 PAY)
-If they buy for 20 ETH, they got 20000 PAY (+15% bonus = 3000 PAY)
-If they buy for 40 ETH, they got 40000 PAY (+20% bonus = 8000 PAY)
-If they buy for 80 ETH, they got 80000 PAY (+25% bonus = 20000 PAY)
-and so on... (so some bonus if they buy extra, this is good for liquidity providers as well). Can be also on percentages, since there is a base price.
+Removed
 
 ### 2] Lock
 We have 2 types of lock. A lock till trading start and an address lock.
@@ -51,7 +42,7 @@ The other lock is a general lock, since we are doing a tokensale, we want to ena
 
 We run an old contact at 0x1Fe72034dA777ef22533eaa6Dd7cBE1D80bE50Fa. We are going to swap, since PAY as symbol is already taken by TenX. We don't want confusing, so we rebrand the symbol to PAYT. PAYT will be unique and listed as the symbol on exchange. Old tokenholders need to swap from PAY to PAYT. Where the old supply will be send to 0x0 or burned and they got PAYT in return, if they send PAY to the new contract. 
 
-### 4] Staking
+### 4] Staking (seperate contract)
 
 Holders of the PAY token get all an extra stake on top of their holdings, they payout is monthly. The stake is the minting of new tokens till the total supply is reached. So every month there need to be a snapshot of the tokenholders which are getting extra tokens on top of their amount. So if they hold 120 PAY, they mint every year 12 PAY on top, which is 1 PAY every month. 
 
@@ -81,17 +72,20 @@ Note:
 ### Installation
 
 For testnet environments...
+Use --reset, if the contract is already deployed
 
 ```sh
-$ cd payaccept-smarttoken
-$ truffle
+$ truffle compile
+$ truffle migrate --network ropsten
 ```
-
+sud
 For production environments...
 
 ```sh
-$ cd payaccept-smarttoken
-$ NODE_ENV=production node app
-$ truffle
+$ truffle deploy
 ```
 
+### Audit
+Developers can do their audit on https://tool.smartdec.net
+PayAccept will hire an agency which is doing a complete audit + report.
+Code which get published to mainnet needs to pass the Solium code quality and Security linter. See https://github.com/duaraghav8/Ethlint

@@ -2,8 +2,6 @@
 pragma solidity ^0.6.0;
 
 contract SafeMath {
-
- 
    /**
      * @dev Returns the subtraction of two unsigned integers, reverting on
      * overflow (when the result is negative).
@@ -17,7 +15,7 @@ contract SafeMath {
     function safeSub(uint256 a, uint256 b) internal pure returns (uint256) {
         return safeSub(a, b, "SafeMath: subtraction overflow");
     }
-  
+
     /**
      * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
      * overflow (when the result is negative).
@@ -33,8 +31,7 @@ contract SafeMath {
         uint256 c = a - b;
         return c;
     }
-    
-    
+
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
      * overflow.
@@ -50,7 +47,7 @@ contract SafeMath {
         require(c >= a, "SafeMath: addition overflow");
         return c;
     }
-    
+
     /**
      * @dev Returns the multiplication of two unsigned integers, reverting on
      * overflow.
@@ -110,14 +107,13 @@ contract SafeMath {
 
         return c;
     }
-    
+
     function safeExponent(uint256 a,uint256 b) internal pure returns (uint256) {
-      uint256 result;
-      assembly {
-          result:=exp(a, b)	
-      }
-      return result;
-  }
-    
-    
+        uint256 result;
+        assembly {
+            result:=exp(a, b)
+        }
+        return result;
+    }
+
 }

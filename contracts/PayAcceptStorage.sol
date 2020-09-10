@@ -8,7 +8,7 @@ contract PayAcceptStorage {
 
     uint256 internal _totalSupply;
 
-    string internal constant _name = "PayAccept Token";
+    string internal constant _name = "PayAccept" ;
     string internal constant _symbol = "PAYT";
     uint8 internal constant _decimals = 18;
     uint256 internal constant _maxSupply = 45000000 ether;
@@ -43,3 +43,4 @@ contract PayAcceptStorage {
         address indexed newOwner
     );
 }
+

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
-import './IRegistry.sol';
-import './UpgradeabilityStorage.sol';
+import "./IRegistry.sol";
+import "./UpgradeabilityStorage.sol";
 
 /**
  * @title UpgradeabilityProxy
