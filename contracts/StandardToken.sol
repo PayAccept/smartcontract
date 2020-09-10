@@ -110,7 +110,6 @@ abstract contract StandardToken is IERC20, PayAcceptStorage, SafeMath, Ownable {
     function _burn(address account, uint256 amount)
         internal
         virtual
-        notThisAddress(account)
         notZeroAddress(account)
         notZeroValue(amount)
         returns (bool)
