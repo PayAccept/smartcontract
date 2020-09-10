@@ -38,7 +38,6 @@ contract Ownable is Constant {
         owner = _whom;
     }
 
-
     /**
      * @dev Throws if called by any account other than the owner.
      */
