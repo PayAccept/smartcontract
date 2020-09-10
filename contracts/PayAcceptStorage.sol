@@ -38,7 +38,7 @@ contract PayAcceptStorage {
     event TokenSaleEnded(uint256 time);
     event BasePriceChanged(uint256 oldPrice, uint256 _newPrice);
 
-    event MintingOwnershipTransfered(
+    event MintingOwnershipTransferred(
         address indexed previousOwner,
         address indexed newOwner
     );
