@@ -16,7 +16,7 @@ abstract contract Proxy {
      * @dev Fallback function allowing to perform a delegatecall to the given implementation.
      * This function will return whatever the implementation call returns
      */
-    
+
     function _fallback() internal {
         address _impl = implementation();
         require(_impl != address(0),"ERR_IMPLEMENTEION_ZERO");
@@ -35,9 +35,9 @@ abstract contract Proxy {
                 default {
                     return(ptr, size)
                 }
-        }  
+        }
     }
-    
+
 
     fallback() external payable {
         _fallback();

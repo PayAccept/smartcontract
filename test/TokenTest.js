@@ -6,7 +6,7 @@ const {
     time,
     BN,
   } = require("@openzeppelin/test-helpers");
-  
+
   const { ZERO_ADDRESS } = constants;
 
 const { expect } = require("chai");
@@ -45,7 +45,7 @@ const getWith18Decimals = function (amount) {
   return new BN(amount).mul(denominator);
 };
 
-var tokenName = "PayAccept Token" ;
+var tokenName = "PayAccept" ;
 var symbol = "PAYT";
 var decimals = 18;
 var maxSupply = getWith18Decimals(45000000);
@@ -56,8 +56,8 @@ contract("~PaytToken works", function (accounts) {
       account1,
       account2,
       account3,
-      account4, 
-      account5, 
+      account4,
+      account5,
       account6,
       account7,
       account8,
@@ -84,14 +84,14 @@ contract("~PaytToken works", function (accounts) {
 
         await this.paytRegistery.createProxy(1,
                 this.testTokenOLD.address, // old token address
-                "19000000000000000000000000", // 19m total premint token for owner 
-                "5000000000000000000000000", // 5m team token 
+                "19000000000000000000000000", // 19m total premint token for owner
+                "5000000000000000000000000", // 5m team token
                 "1000000000000000000000000", // 1m supply for airdrop
-                ["1609459200","1622505600","1640995200"], // tema token unlock date 
+                ["1609459200","1622505600","1640995200"], // tema token unlock date
                 ["2000000000000000000000000","2000000000000000000000000","1000000000000000000000000"],//teamToken amount
                 ownerAccount // owner account for paytToken
             );
-        
+
         let proxyAddress = await paytRegistery.proxyAddress();
 
         this.paytToken = await PaytToken.at(proxyAddress);
@@ -100,9 +100,9 @@ contract("~PaytToken works", function (accounts) {
             from: Owner,
         });
     });
-   
+
     describe("System should be initialized correctly", async function () {
-       
+
         it("has a name", async function () {
             expect(await this.paytToken.name()).to.equal(tokenName);
         });
@@ -114,7 +114,7 @@ contract("~PaytToken works", function (accounts) {
     });
 
     describe("Before Tokensale Start", async function () {
-        
+
         beforeEach(async function () {
 
             try{
@@ -151,9 +151,9 @@ contract("~PaytToken works", function (accounts) {
             }catch(e){
 
             }
-            
+
         })
-        
+
         it("Before TokenSale Start Balance is Zero", async function () {
             expect(await this.paytToken.balanceOf(account1)).to.be.bignumber.equal(
                 getWith18Decimals(0).toString()
@@ -180,7 +180,7 @@ contract("~PaytToken works", function (accounts) {
             );
         });
 
-        
+
 
     });
 
@@ -198,7 +198,7 @@ contract("~PaytToken works", function (accounts) {
 
     describe("Cheking Airdrop", async function () {
         beforeEach(async function () {
-          await this.paytToken.airDropTokens(["0x0000000000000000000000000000000000000001","0x0000000000000000000000000000000000000002"],[basicTokenAmount.toString(),basicTokenAmount.toString()],{ from: Owner }) 
+          await this.paytToken.airDropTokens(["0x0000000000000000000000000000000000000001","0x0000000000000000000000000000000000000002"],[basicTokenAmount.toString(),basicTokenAmount.toString()],{ from: Owner })
         });
         it("Cheking Airdrop account Balance", async function () {
             expect(await this.paytToken.balanceOf("0x0000000000000000000000000000000000000001")).to.be.bignumber.equal(
@@ -212,20 +212,20 @@ contract("~PaytToken works", function (accounts) {
 
     describe("End Token Sale", async function () {
         beforeEach(async function () {
-          await this.paytToken.startTokenSale({ from: Owner }) 
+          await this.paytToken.startTokenSale({ from: Owner })
           await web3.eth.sendTransaction({
             from: account4,
             to: this.paytToken.address,
             value: getWith18Decimals(1),
           });
-          await this.paytToken.endTokenSale({ from: Owner }) 
+          await this.paytToken.endTokenSale({ from: Owner })
           await this.paytToken.transfer(account5,getWith18Decimals(1000),{ from: account4 });
         });
         it("Cheking Transfer After TokenSale End", async function () {
             expect(await this.paytToken.balanceOf(account5)).to.be.bignumber.equal(
                 getWith18Decimals(1000).toString()
             );
-            
+
             expect(await this.paytToken.balanceOf(account4)).to.be.bignumber.equal(
                 getWith18Decimals(0).toString()
             );
@@ -234,13 +234,13 @@ contract("~PaytToken works", function (accounts) {
 
     describe("Test Locking", async function () {
         beforeEach(async function () {
-          await this.paytToken.startTokenSale({ from: Owner }) 
+          await this.paytToken.startTokenSale({ from: Owner })
           await web3.eth.sendTransaction({
             from: account4,
             to: this.paytToken.address,
             value: getWith18Decimals(1),
           });
-          await this.paytToken.endTokenSale({ from: Owner }) 
+          await this.paytToken.endTokenSale({ from: Owner })
           await this.paytToken.setLokignPeriod(account4,"1600266713",{ from: Owner }) ;
 
           try{
@@ -262,12 +262,12 @@ contract("~PaytToken works", function (accounts) {
             );
         });
     })
-    
+
 
     describe("Test Stacking & PayNodes", async function () {
-       
+
         beforeEach(async function () {
-          await this.paytToken.startTokenSale({ from: Owner }) 
+          await this.paytToken.startTokenSale({ from: Owner })
           await web3.eth.sendTransaction({
             from: account4,
             to: this.paytToken.address,
@@ -278,18 +278,18 @@ contract("~PaytToken works", function (accounts) {
             to: this.paytToken.address,
             value: getWith18Decimals(45),
           });
-          await this.paytToken.endTokenSale({ from: Owner }) 
-          await this.paytToken.addaccountToPayNode(account6,{from: Owner}) 
+          await this.paytToken.endTokenSale({ from: Owner })
+          await this.paytToken.addaccountToPayNode(account6,{from: Owner})
           await this.paytToken.startStacking({ from: Owner })
-          await this.paytToken.claimStack({ from: account4 }) 
-          await this.paytToken.claimStack({ from: account6 }) 
- 
+          await this.paytToken.claimStack({ from: account4 })
+          await this.paytToken.claimStack({ from: account6 })
+
           await web3.eth.sendTransaction({
             from: Owner,
             to: account6,
             value: getWith18Decimals(45),
           });
-          
+
         });
 
         it("Cheking Claim Stack for Not a payNoder", async function () {
@@ -304,12 +304,12 @@ contract("~PaytToken works", function (accounts) {
             );
         });
 
-       
+
     })
 
     describe("Test PayNodes For AutoMatic Remove", async function () {
         beforeEach(async function () {
-          await this.paytToken.startTokenSale({ from: Owner }) 
+          await this.paytToken.startTokenSale({ from: Owner })
           await web3.eth.sendTransaction({
             from: account4,
             to: this.paytToken.address,
@@ -320,23 +320,23 @@ contract("~PaytToken works", function (accounts) {
             to: this.paytToken.address,
             value: getWith18Decimals(45),
           });
-          await this.paytToken.endTokenSale({ from: Owner }) 
-          await this.paytToken.addaccountToPayNode(account6,{from: Owner}) 
+          await this.paytToken.endTokenSale({ from: Owner })
+          await this.paytToken.addaccountToPayNode(account6,{from: Owner})
           await this.paytToken.startStacking({ from: Owner })
-          await this.paytToken.transfer(account4,await this.paytToken.balanceOf(account6),{ from: account6 }) 
-          await this.paytToken.transfer(account6,getWith18Decimals(1000),{ from: account4 }) 
-          await this.paytToken.claimStack({ from: account6 }) 
-          
+          await this.paytToken.transfer(account4,await this.paytToken.balanceOf(account6),{ from: account6 })
+          await this.paytToken.transfer(account6,getWith18Decimals(1000),{ from: account4 })
+          await this.paytToken.claimStack({ from: account6 })
+
         });
 
         it("Cheking Claim Stack payNoder when balance is below limit", async function () {
             expect(await this.paytToken.balanceOf(account6)).to.be.bignumber.equal(
                 "1008333333333333333333"
             );
-        });   
+        });
     })
     describe("Team Token", async function () {
-        
+
         beforeEach(async function () {
           await this.paytToken.startTokenSale({ from: Owner });
           await this.paytToken.endTokenSale({ from: Owner });
@@ -350,6 +350,6 @@ contract("~PaytToken works", function (accounts) {
             expect(await this.paytToken.balanceOf(Owner)).to.be.bignumber.equal(
                 "5000000000000000000000000"
             );
-        });   
+        });
     })
 });

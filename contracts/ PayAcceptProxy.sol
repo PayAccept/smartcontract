@@ -22,7 +22,6 @@ interface PayAcceptProxyInterFace {
  * @dev This contract works as a registry of versions, it holds the implementations for the registered versions.
  */
 contract PayAcceptRegistery is Ownable, IRegistry {
-    
     // Mapping of versions to implementations of different functions
     mapping(uint256 => address) internal versions;
 
@@ -30,10 +29,8 @@ contract PayAcceptRegistery is Ownable, IRegistry {
 
     address payable public proxyAddress;
 
-    
-    
     constructor()
-        public{}
+    public{}
 
     /**
      * @dev Registers a new version with its implementation address
@@ -68,7 +65,8 @@ contract PayAcceptRegistery is Ownable, IRegistry {
      * @param version representing the first version to be set for the proxy
      * @return address of the new proxy created
      */
-    function createProxy(uint256 version,
+    function createProxy(
+        uint256 version,
         address _oldTokenAddress,
         uint256 _premintToken,
         uint256 _teamToken,
