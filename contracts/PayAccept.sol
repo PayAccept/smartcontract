@@ -75,7 +75,7 @@ abstract contract Swapping is Locking {
     }
 }
 
-abstract contract minter is Swapping {
+abstract contract Minter is Swapping {
     /**
      * @dev modifier onlyMinter
      */
@@ -84,7 +84,7 @@ abstract contract minter is Swapping {
         _;
     }
 
-    function _trasnferMintingOwnership(address _whom) internal {
+    function _transferMintingOwnership(address _whom) internal {
         emit MintingOwnershipTransfered(mintingOwner, _whom);
         mintingOwner = _whom;
     }
@@ -108,7 +108,7 @@ abstract contract minter is Swapping {
      */
     function acceptMintingOwnerShip() external returns (bool) {
         require(msg.sender == newMintingOwner, "ERR_ONLY_NEW_MINTING_OWNER");
-        _trasnferMintingOwnership(newMintingOwner);
+        _transferMintingOwnership(newMintingOwner);
         newMintingOwner = address(0);
         return true;
     }
@@ -125,7 +125,7 @@ abstract contract minter is Swapping {
  * @title PayToken
  * @dev Contract to create the PaytToken
  **/
-contract PaytToken is Upgradeable, minter, PayAcceptInterFace {
+contract PaytToken is Upgradeable, Minter, PayAcceptInterFace {
     function initialize(
         address _oldTokenAddress,
         uint256 _premintToken,
@@ -140,8 +140,8 @@ contract PaytToken is Upgradeable, minter, PayAcceptInterFace {
         oldTokenAddress = _oldTokenAddress;
         teamTokens = _teamToken;
         marketingTokens = _marketingToken;
-        _trasnferOwnership(ownerAccount);
-        _trasnferMintingOwnership(ownerAccount);
+        _transferOwnership(ownerAccount);
+        _transferMintingOwnership(ownerAccount);
         _mint(owner, _premintToken);
         _mint(address(this), safeAdd(teamTokens, marketingTokens));
         require(
